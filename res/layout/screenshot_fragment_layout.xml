@@ -16,7 +16,7 @@
             android:layout_alignParentTop="true"
             android:layout_centerHorizontal="true"
             android:scaleType="fitXY"
-            android:src="@drawable/sunshine_icon" />
+            android:src="@drawable/usbong_icon" />
 
         <ImageButton
             android:id="@+id/playVideoButton"
