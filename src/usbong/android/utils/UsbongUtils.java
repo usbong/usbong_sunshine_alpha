@@ -121,7 +121,7 @@ public class UsbongUtils {
 
 	//added by Mike, 20160511
 	public final static String myPackageName="usbong.android.sunshine.alpha";
-	public static String myAppTreeFolder = "/usbong_pagtsing_alpha/usbong_trees/";
+	public static String myAppTreeFolder = "/usbong_sunshine_alpha/usbong_trees/";
 
 	//added by Mike, 20160420
 	public static boolean hasUnlockedLocalLanguages=false; //except Filipino
