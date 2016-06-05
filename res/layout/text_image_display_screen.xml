@@ -12,7 +12,10 @@
 		/>
 	    
 	    <ImageView android:id="@+id/image_display_imageview"
-		    style="@style/UsbongTextImageDisplayImageView"	    	
+		    style="@style/UsbongTextImageDisplayImageView"
+		    android:layout_width="fill_parent"
+	  	    android:layout_height="wrap_content"
+	  	    android:adjustViewBounds="true"    		    	    	
 		/>
 	</LinearLayout>	
 	</ScrollView>	    	        

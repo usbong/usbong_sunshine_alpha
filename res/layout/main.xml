@@ -7,8 +7,9 @@
   	    	style="@style/UsbongTextImageDisplayImageView"	 
 	  	    android:background="@drawable/cover"	    
 	  	    android:layout_width="fill_parent"
-	  	    android:layout_height="fill_parent"	  	    
-			android:contentDescription="@string/cover_img" /> 		    
+	  	    android:layout_height="wrap_content"	
+	  	    android:adjustViewBounds="true"  	    
+			android:contentDescription="@string/cover_img" /> 	
 	</LinearLayout>	
 	<Button android:id="@+id/start_button"
 		style="@style/UsbongMainMenuButton" 
