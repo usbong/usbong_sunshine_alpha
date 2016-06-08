@@ -1,8 +1,6 @@
 # usbong_sunshine_alpha
-+scaffold; 
-
-+improved version of usbong_pagtsing scaffold; 
-
++scaffold; <br>
++improved version of usbong_pagtsing scaffold; <br>
 +does not include actual content (i.e .utree file)
 
 # Official Company Website
