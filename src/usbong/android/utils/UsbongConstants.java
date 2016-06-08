@@ -70,8 +70,8 @@ public class UsbongConstants {
     
     public static final String FROM_MY_YOUTUBE_ACTIVITY_TO_MAIN_MENU = "FROM_MY_YOUTUBE_ACTIVITY_TO_MAIN_MENU";
     
-    public static final String ALL_LOCAL_LANGUAGES_PRODUCT_ID = "usbong.pagtsing.all_local_languages_001";
-    public static final String ALL_FOREIGN_LANGUAGES_PRODUCT_ID = "usbong.pagtsing.all_foreign_languages_001";
+    public static final String ALL_LOCAL_LANGUAGES_PRODUCT_ID = "usbong.sunshine.all_local_languages_001";
+    public static final String ALL_FOREIGN_LANGUAGES_PRODUCT_ID = "usbong.sunshine.all_foreign_languages_001";
     public static final String DEFAULT_PRICE = "0.99USD";
     public static final String MY_PURCHASED_ITEMS = "MyPurchasedItems"; //added by Mike, 20160427
 
