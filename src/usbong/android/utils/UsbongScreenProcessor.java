@@ -614,13 +614,16 @@ public class UsbongScreenProcessor
 		} else if (udtea.currScreen == UsbongConstants.DATE_SCREEN) {
 			udtea.setContentView(R.layout.date_screen);
 			udtea.initBackNextButtons();
-			TextView myDateScreenTextView = (TextView)udtea.findViewById(R.id.date_textview);
+			TextView myDateScreenTextView = (TextView)udtea.findViewById(R.id.date_textview); 
 			myDateScreenTextView = (TextView) UsbongUtils.applyTagsInView(UsbongDecisionTreeEngineActivity.getInstance(), myDateScreenTextView, UsbongUtils.IS_TEXTVIEW, udtea.currUsbongNode);
 			//Reference: http://code.google.com/p/android/issues/detail?id=2037
 			//last accessed: 21 Aug. 2012
 			Configuration userConfig = new Configuration();
 			Settings.System.getConfiguration( udtea.getContentResolver(), userConfig );
 			Calendar date = Calendar.getInstance( userConfig.locale);
+
+			
+/*			
 			//Reference: http://www.androidpeople.com/android-spinner-default-value;
 			//last accessed: 21 Aug. 2012		        
 			//month-------------------------------
@@ -634,15 +637,15 @@ public class UsbongScreenProcessor
 			dateMonthSpinner.setAdapter(udtea.monthAdapter );
 			dateMonthSpinner.setSelection(month);
 //		        System.out.println(">>>>>>>>>>>>>> month"+month);
-//		        Log.d(">>>>>>myStringToken",myStringToken);
-			for (int i=0; i<udtea.monthAdapter .getCount(); i++) {
-//		        	Log.d(">>>>>>udtea.monthAdapter ",udtea.monthAdapter .getItem(i).toString());
+		        Log.d(">>>>>>myStringToken",myStringToken);
+			for (int i=0; i<udtea.monthAdapter.getCount(); i++) {
+		        	Log.d(">>>>>>udtea.monthAdapter ",udtea.monthAdapter.getItem(i).toString());
 				
-				if (myStringToken.contains(udtea.monthAdapter .getItem(i).toString())) {
+				if (myStringToken.contains(udtea.monthAdapter.getItem(i).toString())) {
 					dateMonthSpinner.setSelection(i);
 					
 					//added by Mike, March 4, 2013
-					myStringToken = myStringToken.replace(udtea.monthAdapter .getItem(i).toString(), "");
+					myStringToken = myStringToken.replace(udtea.monthAdapter.getItem(i).toString(), "");
 				}
 			}		        		        
 			//-------------------------------------
@@ -658,7 +661,7 @@ public class UsbongScreenProcessor
 			dateDaySpinner.setAdapter(udtea.dayAdapter);
 			dateDaySpinner.setSelection(day);
 //		        System.out.println(">>>>>>>>>>>>>> day"+day);
-			//		        Log.d(">>>>>myStringToken",myStringToken);
+//					        Log.d(">>>>>myStringToken",myStringToken);
 //		        System.out.println(">>>>>>>> myStringToken"+myStringToken);
 			StringTokenizer myDateStringTokenizer = new StringTokenizer(myStringToken, ",");
 			String myDayStringToken="";
@@ -669,10 +672,11 @@ public class UsbongScreenProcessor
 				if (myDayStringToken.contains(udtea.dayAdapter.getItem(i).toString())) {
 					dateDaySpinner.setSelection(i);
 					
-					myStringToken = myStringToken.replace(udtea.dayAdapter.getItem(i).toString()+",", "");
+					myStringToken = myStringToken.replace(myDayStringToken+",", "");
 //		        		System.out.println(">>>>>>>>>>>myStringToken: "+myStringToken);
 				}
 			}
+    		Log.d(">>>>>>>>>>>myStringToken: ",myStringToken);
 			//-------------------------------------				
 			//year---------------------------------
 			int year = date.get(Calendar.YEAR);
@@ -685,6 +689,7 @@ public class UsbongScreenProcessor
 			else {
 				myDateYearEditText.setText(myStringToken);
 			}
+*/			
 		} else if (udtea.currScreen == UsbongConstants.TEXT_DISPLAY_SCREEN) {
 			udtea.setContentView(R.layout.text_display_screen);
 			udtea.initBackNextButtons();

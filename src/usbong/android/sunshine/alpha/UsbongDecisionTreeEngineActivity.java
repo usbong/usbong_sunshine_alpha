@@ -76,6 +76,7 @@ import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -208,7 +209,7 @@ public class UsbongDecisionTreeEngineActivity extends AppCompatActivity implemen
 	
 	private ProgressDialog myProgressDialog;
 	
-	private int currSelectedItemForSetLanguage=0;
+	private int currSelectedItemForSetLanguage; //set this later in init()
 	
 	//added by Mike, 20160417
     private YouTubePlayerFragment myYouTubePlayerFragment;
@@ -282,16 +283,45 @@ public class UsbongDecisionTreeEngineActivity extends AppCompatActivity implemen
         	currScreen=Integer.parseInt(getIntent().getStringExtra("currScreen")); 
         }
         
-        //default..
+        //updated by Mike, 20160608
+/*        
         currLanguageBeingUsed=UsbongUtils.LANGUAGE_ENGLISH;
 		UsbongUtils.setCurrLanguage("English"); //added by Mike, 22 Sept. 2015
-
+*/
+        //Reference: http://stackoverflow.com/questions/23024831/android-shared-preferences-example
+        //; last accessed: 9 June 2015
+        //answer by Elenasys
+        //added by Mike, 9 June 2015
+        SharedPreferences prefs = getSharedPreferences(UsbongConstants.MY_SAVED_LANGUAGE_SETTING, MODE_PRIVATE);
+        if (prefs!=null) {
+		  //@todo: remove this id thing, immediately use the String; otherwise it'll be cumbersome to keep on adding language ids
+		  currLanguageBeingUsed=prefs.getInt("preferredLanguage", UsbongUtils.getLanguageID(UsbongUtils.getCurrLanguage())); //default is Filipino
+/* //commented out by Mike, 20160608
+ * //default language will be set based on the default language set in the .xml of the .utree file
+ * 		  UsbongUtils.setDefaultLanguage(UsbongUtils.getLanguageBasedOnID(currLanguageBeingUsed));
+ */
+		  UsbongUtils.setCurrLanguage(UsbongUtils.getLanguageBasedOnID(currLanguageBeingUsed));//prefs.getInt("preferredLanguage", 0))); //updated by Mike, 20160612
+      	}
+      	else {
+          //default..
+          currLanguageBeingUsed=UsbongUtils.getLanguageID(UsbongUtils.getCurrLanguage());
+		  //UsbongUtils.setCurrLanguage(UsbongUtils.getLanguageBasedOnID(currLanguageBeingUsed)); //updated by Mike, 20160612
+      	}
+        
+        
+/* 		//commented out by Mike, 20160618
+ * 		//why? the index numbers used by currSelectedItemForSetLanguage does not always match with currLanguageBeingUsed
+ *        //added by Mike, 20160608
+ *        currSelectedItemForSetLanguage = currLanguageBeingUsed;
+ */       
         //==================================================================
         //text-to-speech stuff
+/*//comment out, not needed in DAHON, 
+ * commented out by Mike, 20160613
         Intent checkIntent = new Intent();
         checkIntent.setAction(TextToSpeech.Engine.ACTION_CHECK_TTS_DATA);
         startActivityForResult(checkIntent, UsbongUtils.MY_DATA_CHECK_CODE);
-
+*/
         mTts = new TextToSpeech(this,this);
 		mTts.setLanguage(new Locale("en", "US"));//default
         //==================================================================
@@ -299,7 +329,7 @@ public class UsbongDecisionTreeEngineActivity extends AppCompatActivity implemen
 		myMediaPlayer = new MediaPlayer();
 		myMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC); //added by Mike, 22 July 2015
 		myMediaPlayer.setVolume(1.0f, 1.0f);
-
+		
 		//added by Mike, 25 Sept. 2015
 		myBGMediaPlayer = new MediaPlayer();
 		myBGMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
@@ -632,9 +662,20 @@ public class UsbongDecisionTreeEngineActivity extends AppCompatActivity implemen
         if (myTransArrayList==null) {
         	myTransArrayList = new ArrayList<String>();
         }
+        
         //add the language setting of the xml tree to the list
-        myTransArrayList.add(0, UsbongUtils.getDefaultLanguage());
+//        myTransArrayList.add(0, UsbongUtils.getDefaultLanguage());
+        myTransArrayList.add(0, UsbongUtils.getDefaultLanguageOfXML()); //edited by Mike, 20160608
         final int myTransArrayListSize = myTransArrayList.size();
+        
+        //added by Mike, 20160618
+        currSelectedItemForSetLanguage = UsbongUtils.getLanguageID(UsbongUtils.getDefaultLanguage());
+		for (int i = 0; i < myTransArrayListSize; i++) {
+			if (myTransArrayList.get(i).equals(UsbongUtils.getLanguageBasedOnID(currLanguageBeingUsed))) {
+				currSelectedItemForSetLanguage = i;
+			}
+		}
+        
 /*		        
 		for (int i = 0; i < myTransArrayListSize; i++) {
 		    arrayAdapter.add(myTransArrayList.get(i));				    
@@ -677,7 +718,7 @@ public class UsbongDecisionTreeEngineActivity extends AppCompatActivity implemen
 				}
 			}
 		}
-		
+				
 		//20160420				
 		// Unlock Languages button
 		setLanguageDialog.setPositiveButton("Unlock Languages",
@@ -694,6 +735,7 @@ public class UsbongDecisionTreeEngineActivity extends AppCompatActivity implemen
 		                dialog.dismiss();
 		            }
 		        });
+		Log.d(">>>>>","currSelectedItemForSetLanguage: "+currSelectedItemForSetLanguage);
 		setLanguageDialog.setSingleChoiceItems(arrayAdapter,currSelectedItemForSetLanguage,//setAdapter(arrayAdapter,
 		        new DialogInterface.OnClickListener() {
 		            public void onClick(DialogInterface dialog, int which) {
@@ -704,6 +746,15 @@ public class UsbongDecisionTreeEngineActivity extends AppCompatActivity implemen
 
 						currLanguageBeingUsed = UsbongUtils.getLanguageID(UsbongUtils.getSetLanguage());
 						UsbongUtils.setCurrLanguage(UsbongUtils.getSetLanguage()); //added by Mike, 22 Sept. 2015
+
+						//added by Mike, 20160608
+				        //Reference: http://stackoverflow.com/questions/23024831/android-shared-preferences-example
+				        //; last accessed: 9 June 2015
+				        //answer by Elenasys
+				        //added by Mike, 9 June 2015
+				        SharedPreferences.Editor editor = getSharedPreferences(UsbongConstants.MY_SAVED_LANGUAGE_SETTING, MODE_PRIVATE).edit();
+				        editor.putInt("preferredLanguage", currLanguageBeingUsed);
+				        editor.commit();
 						
 						//added by Mike, 4 June 2015
 						//remove the current element in the node container and start anew
@@ -921,7 +972,7 @@ public class UsbongDecisionTreeEngineActivity extends AppCompatActivity implemen
 				}).show();
 				return true;
 			case android.R.id.home: //added by Mike, 22 Sept. 2015
-	        	processReturnToMainMenuActivity();
+	        	processReturnToTitleScreenActivity();
 		        return true;
 			default:
 				return super.onOptionsItemSelected(item);
@@ -1138,11 +1189,12 @@ public class UsbongDecisionTreeEngineActivity extends AppCompatActivity implemen
 //				myMediaPlayer.setVolume(1.0f, 1.0f);
 				myMediaPlayer.start();
 //				myMediaPlayer.seekTo(0);
-				
+
 				//added by Mike, 20160417
 				myMediaPlayer.setOnCompletionListener(new OnCompletionListener() {
 		            public void onCompletion(MediaPlayer mp) {
-		            	if (UsbongUtils.IS_IN_AUTO_PLAY_MODE) {
+		            	if ((UsbongUtils.IS_IN_AUTO_PLAY_MODE) &&
+		            			(UsbongUtils.isAnAutoPlayException(instance))){
 		            		processNextButtonPressed();
 		            	}
 		            }
@@ -1199,7 +1251,9 @@ public class UsbongDecisionTreeEngineActivity extends AppCompatActivity implemen
 					@Override
 					public void onDone(String utteranceId) {
 		            	if (utteranceId.equals(UsbongConstants.MY_UTTERANCE_ID)) {
-							if (UsbongUtils.IS_IN_AUTO_PLAY_MODE) {
+			            	//added by Mike, 20160608
+		            		if ((UsbongUtils.IS_IN_AUTO_PLAY_MODE) &&
+			            			(UsbongUtils.isAnAutoPlayException(instance))){
 			            		instance.runOnUiThread(new Runnable() {
 			            		     @Override
 			            		     public void run() {
@@ -1377,7 +1431,7 @@ public class UsbongDecisionTreeEngineActivity extends AppCompatActivity implemen
     public boolean onKeyDown(int keyCode, KeyEvent event) {
     	if (getParent()!=null) { 
 	        if (keyCode == KeyEvent.KEYCODE_BACK) {
-	        	processReturnToMainMenuActivity();
+	        	processReturnToTitleScreenActivity();
 	        	return false;
 	        }
     	}
@@ -1388,7 +1442,7 @@ public class UsbongDecisionTreeEngineActivity extends AppCompatActivity implemen
     //added by Mike, Feb. 2, 2013
     @Override
 	public void onBackPressed() {
-    	processReturnToMainMenuActivity();    
+    	processReturnToTitleScreenActivity();    
     }
     
     @Override
@@ -1581,12 +1635,19 @@ public class UsbongDecisionTreeEngineActivity extends AppCompatActivity implemen
 			  //if this is the first process-definition tag
 			  else if (parser.getAttributeCount()>1){ 
 				  if ((currUsbongNode.equals("")) && (parser.getName().equals("process-definition"))) {
+					  //edited by Mike, 20160608
+					  //remove this so that it is possible to load the .utree with a saved language setting
+
+					  UsbongUtils.setDefaultLanguageOfXML(UsbongUtils.getLanguageBasedOnID(UsbongUtils.getLanguageID(parser.getAttributeValue(null, "lang"))));
+/*
 					  if (!isAutoLoopedTree) {
 						  //@todo: remove this id thing, immediately use the String; otherwise it'll be cumbersome to keep on adding language ids
+
 						  currLanguageBeingUsed=UsbongUtils.getLanguageID(parser.getAttributeValue(null, "lang"));
 						  UsbongUtils.setDefaultLanguage(UsbongUtils.getLanguageBasedOnID(currLanguageBeingUsed));
-						  UsbongUtils.setCurrLanguage(parser.getAttributeValue(null, "lang")); //added by Mike, 22 Sept. 2015
+  						  UsbongUtils.setCurrLanguage(parser.getAttributeValue(null, "lang")); //added by Mike, 22 Sept. 2015
 					  }
+*/					  
 //					  System.out.println("currLanguageBeingUsed: "+currLanguageBeingUsed);
 					  	
 					  //added by Mike, Feb. 2, 2013
@@ -2095,7 +2156,7 @@ public class UsbongDecisionTreeEngineActivity extends AppCompatActivity implemen
             	currUsbongNode=(String)usbongNodeContainer.elementAt(usbongNodeContainerCounter);
             }
             else { 
-            	processReturnToMainMenuActivity();
+            	processReturnToTitleScreenActivity();
 /*                	initParser();
                 	return;
 */
@@ -2504,8 +2565,10 @@ public class UsbongDecisionTreeEngineActivity extends AppCompatActivity implemen
     			catch(Exception e) {
     				//if the user hasn't ticked any radio button yet
     				//put the currUsbongNode to default
-	    			currUsbongNode = UsbongUtils.getLinkFromRadioButton(nextUsbongNodeIfYes); //nextUsbongNodeIfNo will also do, since this is "Any"
+//	    			currUsbongNode = UsbongUtils.getLinkFromRadioButton(nextUsbongNodeIfYes); //nextUsbongNodeIfNo will also do, since this is "Any"
 	    			//of course, showPleaseAnswerAlert() will be called			    			  
+    				//edited by Mike, 20160613
+    				//don't change the currUsbongNode anymore if no radio button has been ticked    				
     			}		    			
     			
 //		    			Log.d(">>>>>>>>>>currUsbongNode",currUsbongNode);
@@ -2776,19 +2839,26 @@ public class UsbongDecisionTreeEngineActivity extends AppCompatActivity implemen
     		}		    		
     		else if (currScreen==UsbongConstants.DATE_SCREEN) {
     			currUsbongNode = nextUsbongNodeIfYes;
+    			//added by Mike, 13 Oct. 2015
+    			DatePicker myDatePicker = (DatePicker) findViewById(R.id.date_picker);		    			
+	    		UsbongUtils.addElementToContainer(usbongAnswerContainer, "A,"+myDatePicker.getMonth() +
+ 						 myDatePicker.getDayOfMonth() + "," +
+ 						myDatePicker.getYear()+";", usbongAnswerContainerCounter);
+
+/*		    			
 		    	Spinner dateMonthSpinner = (Spinner) findViewById(R.id.date_month_spinner);
 		        Spinner dateDaySpinner = (Spinner) findViewById(R.id.date_day_spinner);
 		        EditText myDateYearEditText = (EditText)findViewById(R.id.date_edittext);
-/*		    			usbongAnswerContainer.addElement("A,"+monthAdapter.getItem(dateMonthSpinner.getSelectedItemPosition()).toString() +
-								 						 dayAdapter.getItem(dateDaySpinner.getSelectedItemPosition()).toString() + "," +
-								 						 myDateYearEditText.getText().toString()+";");		    					
-*/
+//    			usbongAnswerContainer.addElement("A,"+monthAdapter.getItem(dateMonthSpinner.getSelectedItemPosition()).toString() +
+//						 						 dayAdapter.getItem(dateDaySpinner.getSelectedItemPosition()).toString() + "," +
+//						 						 myDateYearEditText.getText().toString()+";");		    					
 	    		UsbongUtils.addElementToContainer(usbongAnswerContainer, "A,"+monthAdapter.getItem(dateMonthSpinner.getSelectedItemPosition()).toString() +
 						 						 dayAdapter.getItem(dateDaySpinner.getSelectedItemPosition()).toString() + "," +
 						 						 myDateYearEditText.getText().toString()+";", usbongAnswerContainerCounter);
+*/		    			
 				usbongAnswerContainerCounter++;
 
-//		    			System.out.println(">>>>>>>>>>>>>Date screen: "+usbongAnswerContainer.lastElement());
+//    			System.out.println(">>>>>>>>>>>>>Date screen: "+usbongAnswerContainer.lastElement());
     			initParser();				        	
     		}		    		
     		else if (currScreen==UsbongConstants.TIMESTAMP_DISPLAY_SCREEN) {
@@ -3061,8 +3131,8 @@ public class UsbongDecisionTreeEngineActivity extends AppCompatActivity implemen
     }
 
     //edited by Mike, 20160417
-    private void processReturnToMainMenuActivity() {
-		String[] myPrompts = UsbongUtils.initProcessReturnToMainMenuActivity();
+    private void processReturnToTitleScreenActivity() {
+		String[] myPrompts = UsbongUtils.initProcessReturnToTitleScreenActivity();
 		    		
     	//added by Mike, Feb. 2, 2013;
 		//edited by Mike, 20151120
@@ -3072,7 +3142,7 @@ public class UsbongDecisionTreeEngineActivity extends AppCompatActivity implemen
 		prompt.setPositiveButton(myPrompts[UsbongUtils.MY_PROMPT_POSITIVE_BUTTON_TEXT], new DialogInterface.OnClickListener() {
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
-				processReturnToMainMenuActivityYes();
+				processReturnToTitleScreenActivityYes();
 			}
 		});
 		prompt.setNegativeButton(myPrompts[UsbongUtils.MY_PROMPT_NEGATIVE_BUTTON_TEXT], new DialogInterface.OnClickListener() {
@@ -3083,8 +3153,13 @@ public class UsbongDecisionTreeEngineActivity extends AppCompatActivity implemen
 		prompt.show();		
     }
     
-    //added by Mike, 20160417
+    //added by Mike, 20160616
     private void processReturnToMainMenuActivityYes() {
+    	processReturnToTitleScreenActivityYes();
+    }
+    
+    //added by Mike, 20160417
+    private void processReturnToTitleScreenActivityYes() {
 		decisionTrackerContainer.removeAllElements();
 
 		Log.d(">>>>UsbongUtils.STORE_OUTPUT",""+UsbongUtils.STORE_OUTPUT);
