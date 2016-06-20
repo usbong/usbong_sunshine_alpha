@@ -2515,7 +2515,8 @@ public class UsbongUtils {
             ds.setPathEffect(new DashPathEffect(new float[]{5,5},0));
             ds.setUnderlineText(true);
 */
-        	ds.setAlpha(128);//make the hint's color lighter
+        	//edited by Mike, 20160620
+        	ds.setAlpha(171);//128);//make the hint's color lighter
         }        
     }  
     
